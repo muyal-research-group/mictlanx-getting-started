@@ -1,126 +1,226 @@
-# MictlanX - Basics
+# MictlanX Basics
 
-## Requirements
-- Python 3.8+
-- Poetry (pip3 install poetry)
-- Docker 
+A basic example of using the `mictlanx` library to interact with a distributed file storage system in asynchronous mode. This project demonstrates setting up a client, uploading files, and managing configurations via environment variables and Docker Compose.
 
-## Getting started
-1. Deploy a MictlanX Storage System executing the bash script ```run_mictlanx.sh``` this is gonna create a network called ```mictlanx```, 1 router and 1 xolo summoner. 
+---
 
-```sh
+## 📁 Project Structure
+
+```
+.
+├── README.md
+├── assets/                    # Optional static assets
+├── log/                       # Log output directory
+│   ├── client-0
+│   └── client-0.error
+├── mictlanx.yml              # MictlanX configuration file
+├── mictlanxbasics/
+│   ├── __init__.py
+│   └── main.py               # Main async example script
+├── poetry.lock
+├── pyproject.toml
+├── requirements.txt
+├── run_mictlanx.sh          # Script to launch containers with Docker Compose
+├── source/                  # Source media to upload
+│   ├── 01.gif
+│   ├── 02.jpg
+│   └── 03.jpg
+└── tests/
+    └── __init__.py
+```
+
+---
+
+## 🚀 Getting Started
+
+### 🐳 Docker Compose Deployment
+
+Use the provided `run_mictlanx.sh` script to launch the required MictlanX services using Docker Compose:
+
+### Run
+
+```bash
 ./run_mictlanx.sh
 ```
 
-after this command you're gonna see in your Docker Deskptop something like this:
+This script will initialize all necessary containers as defined in the `mictlanx.yml` configuration file.
 
-<p align=center>
-<img src="assets/01.png" width=200 />
-<p/>
+Make sure you have Docker and Docker Compose installed and available in your shell.
+
+---
+## Install Dependencies
+
+This project uses [Poetry](https://python-poetry.org/) for dependency and environment management. Follow these steps to install everything cleanly using the official `poetry-plugin-shell`.
+
+#### ✅ Step-by-step Setup
+
+1. **Install Poetry (using the official installer)**
+
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+   Make sure Poetry is available in your shell:
+
+   ```bash
+   poetry --version
+   ```
+
+2. **Install the Poetry Shell Plugin**
+
+   Poetry 2.0+ requires a plugin for `poetry shell` support:
+
+   ```bash
+   poetry self add poetry-plugin-shell
+   ```
 
 
-2. Now deploy 2 storage peers using this script:
+4. **Create and activate the virtual environment**
 
-```sh
-./add_peers.sh
+   From your project directory:
+
+   ```bash
+   poetry shell
+   ```
+
+   This activates the virtual environment (creating it if needed).
+
+5. **Install project dependencies**
+
+   Once inside the virtual environment:
+
+   ```bash
+   poetry lock && poetry install
+   ```
+
+---
+
+### 🔍 Optional Checks
+
+- Check which environment Poetry is using:
+
+  ```bash
+  poetry env info
+  ```
+
+- List all environments Poetry knows about:
+
+  ```bash
+  poetry env list
+  ```
+
+
+
+
+---
+
+### Setup Environment
+
+Create a `.env` file or set the environment variables externally. You can also use a custom `.env` file path via the `ENV_FILE_PATH` environment variable.
+
+Example `.env`:
+
+```env
+MICTLANX_CLIENT_ID=client-0
+MICTLANX_DEBUG=1
+MICTLANX_MAX_WORKERS=2
+MICTLANX_LOG_PATH=./log
+SOURCE_PATH=./source
+MICTLANX_PROTOCOL=https
+MICTLANX_ROUTERS=mictlanx-router-0:localhost:60666
 ```
-<p align=center>
-<img src="assets/02.png" width=200 />
-<p/>
 
-3. Finally executes the examples: 
+---
 
-```sh
-poetry shell
-poetry install
-python3 ./mictlanxbasics/main.py
-```
+### Running the Example
 
-It is super important to run the examples from the main folder of the project :) 
+Make sure your MictlanX environment is up and running (see Docker section below), then run the main script:
 
-### Log records
-
-The default folder for logs is ```./log``` please check them out must be two log files in that folder, one of them is the info  ```client-0``` and the second captures the errors ```client-0.error```. 
-
-```json
-[
-    {
-    "timestamp": "2024-06-17 12:55:01,458",
-    "level": "INFO",
-    "logger_name": "client-0",
-    "thread_name": "MainThread",
-    "event": "PUT.CHUNKED",
-    "bucket_id": "moringas",
-    "key": "5dcea5995aad5acaa917cdd5fee5d7fe2a7a8d999f7406d9ee02ee446ca7c801",
-    "size": 233832,
-    "response_time": 0.011284589767456055,
-    "peer_id": "mictlanx-peer-0"
-}
-
-{
-    "timestamp": "2024-06-17 12:55:01,497",
-    "level": "INFO",
-    "logger_name": "client-0",
-    "thread_name": "MainThread",
-    "event": "PUT.CHUNKED",
-    "bucket_id": "moringas",
-    "key": "b74282be58ac89cc701827462723e2e9e161e3527efdfc9ce02b61d7fd8fd1e4",
-    "size": 63090,
-    "response_time": 0.006818532943725586,
-    "peer_id": "mictlanx-peer-1"
-}
-
-{
-    "timestamp": "2024-06-17 12:55:15,816",
-    "level": "INFO",
-    "logger_name": "client-0",
-    "thread_name": "MainThread",
-    "event": "PUT.CHUNKED",
-    "bucket_id": "moringas",
-    "key": "0c18a430386eac26eb1797c6d2a6e69e1046d2b49e0b19bb186d0dde7b6b5503",
-    "size": 372790,
-    "response_time": 0.006620645523071289,
-    "peer_id": "mictlanx-peer-0"
-}
-
-
-]
+```bash
+python3  mictlanxbasics.main
 ```
 
 
+---
 
-## Consume the data
+## 🔍 Viewing Uploaded Files and Metadata
 
-If you run the examples with the default config youre gonna be able to hit the next links to see your data from the browsers: 
+Once you've uploaded files using the example script, you can **inspect and retrieve them** using the MictlanX HTTP API.
 
-- [Data 1](http://localhost:60666/api/v4/buckets/moringas/5dcea5995aad5acaa917cdd5fee5d7fe2a7a8d999f7406d9ee02ee446ca7c801)
-- [Data 2](http://localhost:60666/api/v4/buckets/moringas/b74282be58ac89cc701827462723e2e9e161e3527efdfc9ce02b61d7fd8fd1e4)
-- [Data 3](http://localhost:60666/api/v4/buckets/moringas/0c18a430386eac26eb1797c6d2a6e69e1046d2b49e0b19bb186d0dde7b6b5503)
+The following endpoints are available:
 
+### ✅ Retrieve the Merged File
 
-If you wanna something more complex or you wanna consume from another application you need the client:
-
-```py
-MICTLANX_CLIENT_ID         = os.environ.get("MICTLANX_CLIENT_ID","client-0")
-MICTLANX_DEFAULT_BUCKET_ID = os.environ.get("MICTLANX_DEFAULT_BUCKET_ID","moringas")
-MICTLANX_DEBUG             = bool(int(os.environ.get("MICTLANX_DEBUG","1")))
-MICTLANX_MAX_WORKERS       = int(os.environ.get("MICTLANX_MAX_WORKERS","2"))
-MICTLANX_LOG_PATH          = os.environ.get("MICTLANX_LOG_PATH","./log")
-SOURCE_PATH                = os.environ.get("SOURCE_PATH","./source")
-routers = list(UtilsX.routers_from_str(os.environ.get("MICTLANX_ROUTERS","mictlanx-router-0:localhost:60666")))
-
-client = Client(
-    client_id      = MICTLANX_CLIENT_ID,
-    routers         = routers,
-    debug           = MICTLANX_DEBUG,
-    max_workers     = MICTLANX_MAX_WORKERS,
-    bucket_id       = MICTLANX_DEFAULT_BUCKET_ID,
-    log_output_path = MICTLANX_LOG_PATH    
-)
-
-client.get_with_retry(
-    bucket_id = "moringas",
-    key ="0c18a430386eac26eb1797c6d2a6e69e1046d2b49e0b19bb186d0dde7b6b5503"
-)
-# Result[GetBytesResponse,Exception]
+```http
+GET /api/v4/buckets/<bucket_id>/<key>/merge
 ```
+
+- This endpoint returns the full merged object (i.e., the complete file as it was originally uploaded).
+- In your example code, these values are:
+
+  - `bucket_id`: `"cubeton"`
+  - `key`: `"millave03"`
+
+👉 Example:
+
+```bash
+curl -O https://localhost:60666/api/v4/buckets/cubeton/millave03/merge
+```
+
+Make sure to replace `<router_host>` and `<port>` with the actual address of the router (e.g., `localhost:60666`).
+
+---
+
+### 🧾 Inspect Chunk Metadata
+
+```http
+GET /api/v4/buckets/<bucket_id>/metadata/<key>/chunks
+```
+
+- This endpoint returns the metadata of each chunk that was uploaded as part of the object.
+- Useful for debugging or verifying chunked upload integrity.
+
+👉 Example:
+
+```bash
+curl https://localhost:60666/api/v4/buckets/cubeton/metadata/millave03/chunks
+```
+
+You’ll get a JSON response containing information about each stored chunk (e.g., size, tag, storage node).
+
+---
+
+### 📌 Notes
+
+- These values (`bucket_id` and `key`) are defined statically in the code:
+  
+  ```python
+  bucket_id = "cubeton"
+  key = "millave03"
+  ```
+
+- You can modify them in the script to upload and retrieve different objects.
+
+---
+
+
+## 📦 Features Demonstrated
+
+- Asynchronous interaction with MictlanX via `AsyncClient`
+- Dynamic environment configuration loading via `dotenv`
+- Chunked file uploads to a bucket
+- Tag metadata association per file
+- Basic validation with assertion
+
+---
+
+
+## 📜 License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+## 👤 Author
+
+Developed by Ignacio Castillo. Contributions and suggestions are welcome.

@@ -1,2 +1,4 @@
-./log
+log/
 **/*.lock
+
+**/**/__pycache__/
